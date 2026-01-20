@@ -69,10 +69,39 @@ def display_match(matrix, match, league):
         display_fulltime(matrix, score)
     else:
         display_live(matrix, match_status, score)
-    
+
+    # Render red cards
+    draw_red_cards(matrix, match_data['red_cards_a'], match_data['red_cards_b'])
+
     # Render team logos
     matrix.SetImage(team_a_logo.convert('RGB'), -15, 0)
     matrix.SetImage(team_b_logo.convert('RGB'), 47, 0)
+
+
+def draw_red_cards(matrix, red_a, red_b):
+    # Height of 3 pixels: Row 10 to 13 (Just above the score numbers)
+    y_start = 10
+    y_end = 13
+
+    # Cap at 3 cards max to prevent drawing over logos
+    count_a = min(red_a, 3)
+    count_b = min(red_b, 3)
+
+    # Team A
+    # Start at x=24 and move LEFT for each extra card (-3 pixels per card)
+    for i in range(count_a):
+        start_x = 24 - (i * 3)
+        for x in range(start_x, start_x + 2): # Width 2
+            for y in range(y_start, y_end):
+                matrix.SetPixel(x, y, 255, 0, 0)
+
+    # Team B
+    # Start at x=39 and move RIGHT for each extra card (+3 pixels per card)
+    for i in range(count_b):
+        start_x = 39 + (i * 3)
+        for x in range(start_x, start_x + 2): # Width 2
+            for y in range(y_start, y_end):
+                matrix.SetPixel(x, y, 255, 0, 0)
 
 
 def display_standings(matrix, standings):

@@ -48,7 +48,25 @@ def fetch_matches(league, start_date, max_days_ahead=1, silent=False):
 def parse_match_data(match):
     competition = match['competitions'][0]
     teams = competition['competitors']
+
+    team_a = teams[0]
+    team_b = teams[1]
+
+    red_cards_a = 0
+    red_cards_b = 0
+
+    events = competition.get('details', [])
     
+    for event in events:
+        # Check if this event is a Red Card
+        if event.get('redCard', False):
+            event_team_id = event.get('team', {}).get('id')
+            
+            if event_team_id == team_a['id']:
+                red_cards_a += 1
+            elif event_team_id == team_b['id']:
+                red_cards_b += 1
+
     return {
         'competition': competition,
         'teams': teams,
@@ -57,6 +75,8 @@ def parse_match_data(match):
         'team_b': teams[1]['team']['abbreviation'],
         'team_a_competitor': teams[0],
         'team_b_competitor': teams[1],
+        'red_cards_a': red_cards_a,
+        'red_cards_b': red_cards_b,
     }
 
 
